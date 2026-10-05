@@ -104,7 +104,7 @@ SPEED_TEST_URLS = [               # 测速端点多路 (实测部分节点商屏
     "https://cachefly.cachefly.net/10mb.test",
 ]
 TRACE_URL = "https://www.cloudflare.com/cdn-cgi/trace"      # warp=on 检测套壳节点
-MAX_WORKERS_TEST    = 48            # 同时 sing-box 实测节点数 (Azure 2C7G 实测 24→48 稳定; sing-box 单实例 < 30MB)
+MAX_WORKERS_TEST    = 80            # 同时 sing-box 实测节点数 (Azure 2C7G 实测 24→48 稳定; sing-box 单实例 < 30MB)
 MAX_WORKERS_FETCH   = 8
 MAX_WORKERS_CLASSIFY = 32
 
@@ -1354,6 +1354,7 @@ def test_single_node(item, keep_alive_check=True):
 
 
 def run_liveness_test(candidates: list) -> list:
+    candidates = candidates[:3000]  # 限制最多测前 3000 个节点，彻底避免 50 分钟超时
     print(f"[*] sing-box 全协议真实测活: {len(candidates)} 节点 (并发 {MAX_WORKERS_TEST}) ...")
     results = []
     done_count = [0]
