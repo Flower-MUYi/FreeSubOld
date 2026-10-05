@@ -1629,7 +1629,14 @@ def classify_network_type(ip: str, country: str, asn, org: str, ip_api_rec: dict
 def outbound_to_clash(node: dict, name: str) -> dict:
     """sing-box outbound → Clash (Meta/mihomo) proxy dict"""
     t = node.get("type")
-    server, port = node["server"], node["server_port"]
+    server = node.get("server")
+    port = node.get("server_port") or node.get("port")
+    if not server or not port:
+        return None
+    try:
+        port = int(port)
+    except (ValueError, TypeError):
+        return None
     proxy = {"name": name, "server": server, "port": port, "udp": True}
 
     if t == "vless":
@@ -2194,7 +2201,9 @@ def export_all(unique_nodes, residential, non_residential):
             cp = outbound_to_clash(ob, name)
             if cp:
                 proxies.append(cp)
-            sb_nodes.append(outbound_to_singbox(ob, name))
+            sb = outbound_to_singbox(ob, name)
+            if sb:
+                sb_nodes.append(sb)
         return links, proxies, sb_nodes
 
     # 1) 全量
