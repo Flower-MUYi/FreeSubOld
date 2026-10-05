@@ -94,6 +94,8 @@ def run_test():
             # 实测约束: 不能有裸单端口
             for p in ob["server_ports"]:
                 assert ":" in p, f"裸单端口 {p} 会导致 sing-box FATAL"
+            cp = mv.outbound_to_clash(ob, "TestHy2Hop")
+            assert cp and cp.get("port") == 2087, "Clash 导出未回退到 server_ports 首端口"
         if name == "tuic":
             assert ob.get("uuid") and ob.get("password") and ob.get("congestion_control")
         if name == "anytls":
